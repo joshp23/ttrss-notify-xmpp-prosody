@@ -1,4 +1,4 @@
-# ttrss-notify-xmpp-prosody
+# TT-Rss: Notify XMPP - Prosody
 A [TT-RSS](https://tt-rss.org/) plugin for sending XMPP notifications via [Prosody](https://prosody.im/) using [mod_post_msg](https://modules.prosody.im/mod_post_msg.html)
 
 ### Requires:
