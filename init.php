@@ -3,7 +3,7 @@ class notify_xmpp_prosody extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.0.0",
+		return array("1.0.1",
 			"Notifications to an XMPP Prosody server",
 			"joshu@unfettered.net",
 			false,
@@ -37,56 +37,64 @@ class notify_xmpp_prosody extends Plugin {
 		
 		if ($test_xmpp) {
 			$this->_send($cfg, 'Congrats, your settings work. Now you are ready to receive notifications.');
-			print "Settings saved, test message sent.";
+			echo "Settings saved, test message sent.";
 		} else {
-			print "Incomplete settings saved.";
+			echo "Incomplete settings saved.";
 		}
 	}
 
 	function hook_prefs_tab($args) {
 		if ($args != "prefPrefs") return;
-		 print "<div dojoType=\"dijit.layout.AccordionPane\" 
-					title=\" <i class='material-icons'>chat</i> ".__("XMPP: Prosody Notification Settings")."\">";
+		
 		$cfg = $this->_config(false);
 		if (empty($cfg['xmpp_tag'])) $cfg['xmpp_tag'] = 'notify_xmpp_prosody';
-		print '<p>After setting up your account information, you may invoke this plugin in your filter rules in order to receive notifications. The tag will be automatically assigned after sending and should be unique.</p>';
-		print '<form dojoType="dijit.form.Form">';
-		print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
-			evt.preventDefault();
-			if (this.validate()) {
-				console.log(dojo.objectToQuery(this.getValues()));
-				new Ajax.Request('backend.php', {
-					parameters: dojo.objectToQuery(this.getValues()),
-					onComplete: function(transport) {
-						notify_info(transport.responseText);
-					}
-				});
-				//this.reset();
-			}
-			</script>";
-		print_warning('This plugin requires a <strong>separate XMPP account</strong> for sending notifications. Using the same account for sending and receiving might cause conflicts.');
-		print '<input dojoType="dijit.form.TextBox" style="display : none" name="op" value="pluginhandler">';
-		print '<input dojoType="dijit.form.TextBox" style="display : none" name="method" value="save">';
-		print '<input dojoType="dijit.form.TextBox" style="display : none" name="plugin" value="notify_xmpp_prosody">';
-		print '<table class="prefPrefsList">';
-		print '<colgroup>';
-		print '<col style="width: 40%;"/>';
-		print '<col />';
-		print '</colgroup>';
-		print '<tr><td>'.__('Article Tag').'</td>';
-		print '<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_tag" type="text" value="'.$cfg['xmpp_tag'].'" placeholder="notify_xmpp_prosody"></td></tr>';
-		print '<tr><td>'.__('Prosody Url').'</td>';
-		print '<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_url" type="text" value="'.$cfg['xmpp_url'].'" placeholder="example.org"></td></tr>';
-		print '<tr><td>'.__('XMPP Username').'</td>';
-		print '<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_user" type="text" value="'.$cfg['xmpp_user'].'" placeholder="username"></td></tr>';
-		print '<tr><td>'.__('XMPP Password').'</td>';
-		print '<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_pass" type="password" value="'.$cfg['xmpp_pass'].'" placeholder="password"></td></tr>';
-		print '<tr><td>'.__('Sending to').'</td>';
-		print '<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_notify" type="text" value="'.$cfg['xmpp_notify'].'" placeholder="you@example.org"></td></tr>';
-		print '</table>';
-		print '<p><button dojoType="dijit.form.Button" type="submit">'.__('Save settings').'</button>';
-		print '</form>';
-		print '</div>';
+		
+		?>
+		
+		 <div dojoType=\"dijit.layout.AccordionPane\" 
+					title=\" <i class='material-icons'>chat</i><?= __("XMPP: Prosody Notification Settings") ?>">
+		
+		    <p>After setting up your account information, you may invoke this plugin in your filter rules in order to receive notifications. The tag will be automatically assigned after sending and should be unique.</p>
+		
+		    <form dojoType="dijit.form.Form">
+		        <?= \Controls\pluginhandler_tags($this, "save") ?>
+		        <script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
+			        evt.preventDefault();
+			        if (this.validate()) {
+			            Notify.progress('Saving Notify: XMPP configuration...', true);
+						    xhr.post("backend.php", this.getValues(), (reply) => {
+							    Notify.info(reply);
+						    })
+			        }
+		        </script>
+		        This plugin requires a <strong>separate XMPP account</strong> for sending notifications. Using the same account for sending and receiving might cause conflicts.
+		        <table width="100%" class="prefPrefsList">
+		        <tr>
+		            <td width="40%"><?= __("Article Tag") ?></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_tag" regExp='^(http|https)://.*' value="<?= $cfg['xmpp_tag'] ?>" placeholder="notify_xmpp_prosody"></td>
+		        </tr>
+		        <tr>
+		            <td width="40%"><?= __("Prosody Url") ?></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_url" type="text" value="<?= $cfg['xmpp_url'] ?>" placeholder="example.org" ></td>
+		        </tr>
+		        <tr>
+		            <td width="40%"><?= __("XMPP Username") ?></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_user" type="text" value="<?= $cfg['xmpp_user'] ?>" placeholder="username" ></td>
+		        </tr>
+		        <tr>
+		            <td width="40%"><?= __("XMPP Password") ?></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_pass" type="text" value="<?= $cfg['xmpp_pass'] ?>" placeholder="password" ></td>
+		        </tr>
+		        <tr>
+		            <td width="40%"><?= __("Recipient") ?></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_notify" type="text" value="<?= $cfg['xmpp_notify'] ?>" placeholder="you@example.org" ></td>
+		        </tr>
+	            </table>
+		        <?= \Controls\submit_tag(__("Save")) ?>
+	        </form>
+		</div>
+		
+		<?php
 	}
 
 	function hook_article_filter_action($article, $action) {
