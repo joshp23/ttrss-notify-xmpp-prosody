@@ -133,7 +133,7 @@ class notify_xmpp_prosody extends Plugin {
 						'Authorization: Basic '. base64_encode($cfg['xmpp_user'].':'.$cfg['xmpp_pass']) // <---
 					);
 		if (function_exists('curl_init')) {
-			$ch = curl_init($host);
+			$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_HEADER, 1);
 				curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
