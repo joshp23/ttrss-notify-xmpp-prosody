@@ -66,11 +66,11 @@ class notify_xmpp_prosody extends Plugin {
 		        <table width="100%" class="prefPrefsList">
 		        <tr>
 		            <td width="40%"><?= __("Article Tag") ?></td>
-					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_tag" regExp='^(http|https)://.*' value="<?= $cfg['xmpp_tag'] ?>" placeholder="notify_xmpp_prosody"></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_tag"  type="text" value="<?= $cfg['xmpp_tag'] ?>" placeholder="notify_xmpp_prosody"></td>
 		        </tr>
 		        <tr>
 		            <td width="40%"><?= __("Prosody Url") ?></td>
-					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_url" type="text" value="<?= $cfg['xmpp_url'] ?>" placeholder="example.org" ></td>
+					<td class="prefValue"><input dojoType="dijit.form.ValidationTextBox" required="1" name="xmpp_url" regExp='^(http|https)://.*' value="<?= $cfg['xmpp_url'] ?>" placeholder="example.org" ></td>
 		        </tr>
 		        <tr>
 		            <td width="40%"><?= __("XMPP Username") ?></td>
