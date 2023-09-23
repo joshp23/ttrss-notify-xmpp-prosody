@@ -1,27 +1,22 @@
 <?php
 class notify_xmpp_prosody extends Plugin {
 	private $host;
-
 	function about() {
 		return array("1.0.1",
 			"Notifications to an XMPP Prosody server",
 			"joshu@unfettered.net",
-			false,
 			"https://github.com/joshp23/ttrss-notify-xmpp-prosody");
 	}
 
 	function init($host) {
 		$this->host = $host;
-
 		$host->add_hook($host::HOOK_PREFS_TAB, $this);
 		$host->add_hook($host::HOOK_ARTICLE_FILTER_ACTION, $this);
-
 		$host->add_filter_action($this, "xmpp_send_prosody", "Send XMPP message to Prosody");
 	}
 
 	function save() {
 		$test_xmpp = true;
-		
 		$cfg = array(
 			'xmpp_tag'		=> $_POST['xmpp_tag'],
 			'xmpp_url'		=> $_POST['xmpp_url'],
@@ -29,12 +24,12 @@ class notify_xmpp_prosody extends Plugin {
 			'xmpp_pass'		=> $_POST['xmpp_pass'],
 			'xmpp_notify'	=> $_POST['xmpp_notify']
 		);
-
+		
 		foreach ($cfg as $k => $v) {
 			$this->host->set($this, $k, $v);
 			if (empty($v)) $test_xmpp = false;
 		}
-		
+
 		if ($test_xmpp) {
 			$this->_send($cfg, 'Congrats, your settings work. Now you are ready to receive notifications.');
 			echo "Settings saved, test message sent.";
@@ -51,14 +46,14 @@ class notify_xmpp_prosody extends Plugin {
 		
 		?>
 		
-		 <div dojoType=\"dijit.layout.AccordionPane\" 
-					title=\" <i class='material-icons'>chat</i><?= __("XMPP: Prosody Notification Settings") ?>">
+		 <div dojoType='dijit.layout.AccordionPane' 
+					title=" <i class='material-icons'>chat</i><?= __("XMPP: Prosody Notification Settings") ?>" >
 		
 		    <p>After setting up your account information, you may invoke this plugin in your filter rules in order to receive notifications. The tag will be automatically assigned after sending and should be unique.</p>
 		
 		    <form dojoType="dijit.form.Form">
 		        <?= \Controls\pluginhandler_tags($this, "save") ?>
-		        <script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
+		        <script type="dojo/method" event="onSubmit" args="evt">
 			        evt.preventDefault();
 			        if (this.validate()) {
 			            Notify.progress('Saving Notify: XMPP configuration...', true);
